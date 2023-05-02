@@ -10,7 +10,8 @@ Undertands:
 # setup
 1. `git clone https://github.com/vvrein/kbot.git`
 2. `cd kbot`
-3. `go build`
-4. get new telegram bot token from https://t.me/BotFather
-5. `export TELE_TOKEN="your token"`
-6. `./kbot start`
+3. `go get`
+4. `go build`
+5. get new telegram bot token from https://t.me/BotFather
+6. `export TELE_TOKEN="your token"`
+7. `./kbot start`
