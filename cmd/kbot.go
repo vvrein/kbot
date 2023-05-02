@@ -6,7 +6,9 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -26,6 +28,7 @@ var kbotCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("kbot %s started\n", appVersion)
+		rand.Seed(time.Now().UnixNano())
 
 		settings := telebot.Settings{
 			Token:  os.Getenv("TELEGRAM_TOKEN"),
@@ -39,17 +42,30 @@ var kbotCmd = &cobra.Command{
 			return
 		}
 
-		kbot.Handle(telebot.OnText, func(m telebot.Context) error {
-			log.Print(m.Message().Payload, m.Text())
-			payload := m.Message().Payload
-
-			switch payload {
-			case "hello":
-				err = m.Send(fmt.Sprintf("Hello, I'm Kbot %s!", appVersion))
-			}
-
+		kbot.Handle("/start", func(m telebot.Context) error {
+			err = m.Send(fmt.Sprintf("Hello, I'm Kbot %s!", appVersion))
 			return err
+		})
 
+		kbot.Handle("/help", func(m telebot.Context) error {
+			err = m.Send(fmt.Sprintf("I'm dead simple bot, I can echo back everything you type, " +
+				"also I understand /start /help /randpic commands.\n" +
+				"On /randpic I will send you 1 random image of 1000, with size 200x300"))
+			return err
+		})
+
+		kbot.Handle("/randpic", func(m telebot.Context) error {
+			url := "https://picsum.photos/id/" + strconv.Itoa(rand.Intn(1000)) + "/200/300"
+			log.Println("got /randpic request, serving from", url)
+			photo := &telebot.Photo{File: telebot.FromURL(url)}
+			err = m.Send(photo)
+			return err
+		})
+
+		kbot.Handle(telebot.OnText, func(m telebot.Context) error {
+			log.Println(m.Message().Payload, m.Text())
+			err = m.Send(m.Text())
+			return err
 		})
 
 		kbot.Start()
