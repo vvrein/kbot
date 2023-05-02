@@ -31,7 +31,7 @@ var kbotCmd = &cobra.Command{
 		rand.Seed(time.Now().UnixNano())
 
 		settings := telebot.Settings{
-			Token:  os.Getenv("TELEGRAM_TOKEN"),
+			Token:  os.Getenv("TELE_TOKEN"),
 			Poller: &telebot.LongPoller{Timeout: 10 * time.Second},
 		}
 
